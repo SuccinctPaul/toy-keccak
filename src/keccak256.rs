@@ -17,6 +17,10 @@ impl Keccak {
     pub fn v256() -> Keccak {
         Keccak::new(256)
     }
+    pub fn v384() -> Keccak {
+        Keccak::new(384)
+    }
+
     pub fn v512() -> Keccak {
         Keccak::new(512)
     }

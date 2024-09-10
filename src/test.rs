@@ -1,9 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::keccak256::keccak256;
-    use crate::keccakf::*;
-    use crate::utils::*;
     use rand::Rng;
     use tiny_keccak::{Hasher, Keccak};
 
@@ -11,6 +7,15 @@ mod tests {
         let mut hasher = Keccak::v256();
         hasher.update(&input);
         let mut hash = [0u8; 32];
+        hasher.finalize(&mut hash);
+        let expected = hex::encode(hash);
+        expected
+    }
+
+    fn expected_keccak384(input: &[u8]) -> String {
+        let mut hasher = Keccak::v384();
+        hasher.update(&input);
+        let mut hash = [0u8; 48];
         hasher.finalize(&mut hash);
         let expected = hex::encode(hash);
         expected
@@ -50,6 +55,18 @@ mod tests {
             let z = keccak.hash(&input);
             let hex_out = hex::encode(&z);
             assert_eq!(hex_out, expected_keccak512(&input));
+        }
+    }
+
+    #[test]
+    fn test_keccak384_with_tiny_keccak() {
+        let rng = &mut rand::thread_rng();
+        for length in [1, 4, 136, 272, 1000, 20000] {
+            let input = random_bytes_vec(length, rng);
+            let keccak = crate::keccak256::Keccak::v384();
+            let z = keccak.hash(&input);
+            let hex_out = hex::encode(&z);
+            assert_eq!(hex_out, expected_keccak384(&input));
         }
     }
 }
