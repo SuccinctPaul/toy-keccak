@@ -36,7 +36,7 @@ mod tests {
     }
 
     #[test]
-    fn test_keccak256_without_tiny_keccak() {
+    fn test_keccak256_with_tiny_keccak() {
         let rng = &mut rand::thread_rng();
         for length in [1, 4, 136, 272, 1000, 20000] {
             let input = random_bytes_vec(length, rng);
