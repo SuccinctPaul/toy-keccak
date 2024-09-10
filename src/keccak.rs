@@ -58,8 +58,3 @@ impl Keccak {
         z
     }
 }
-
-pub fn keccak256(input: &[u8]) -> Vec<u8> {
-    let keccak = Keccak::v256();
-    keccak.hash(input)
-}
