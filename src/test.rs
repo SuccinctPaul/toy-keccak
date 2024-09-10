@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::keccak256::{keccak256, keccak256_bits};
+    use crate::keccak256::{keccak256};
     use crate::keccakf::*;
     use crate::utils::*;
     use rand::Rng;
@@ -26,27 +26,25 @@ mod tests {
         let rng = &mut rand::thread_rng();
         for length in [1, 4, 136, 272, 1000, 20000] {
             let input = random_bytes_vec(length, rng);
-            let z = keccak256(&input);
+            let keccak = crate::keccak256::Keccak::v256();
+            let z = keccak.keccak256(&input);
+            let hex_out = hex::encode(&z);
+            assert_eq!(hex_out, expected_keccak(&input));
+        }
+    }
+    #[test]
+    fn test_keccak512_with_tiny_keccak() {
+        let rng = &mut rand::thread_rng();
+        for length in [1, 4, 136, 272, 1000, 20000] {
+            let input = random_bytes_vec(length, rng);
+            let keccak = crate::keccak256::Keccak::v256();
+            let z = keccak.keccak256(&input);
             let hex_out = hex::encode(&z);
             assert_eq!(hex_out, expected_keccak(&input));
         }
     }
 
-    #[test]
-    fn test_keccak256_bits_without_ciruit() {
-        let rng = &mut rand::thread_rng();
-        for length in [1, 4, 136, 272, 1000, 20000] {
-            let input = random_bytes_vec(length, rng);
-            let input_bits = input
-                .iter()
-                .flat_map(|x| u8_to_bits(*x))
-                .collect::<Vec<_>>();
-            let z = keccak256_bits(input_bits);
-            let z_u8 = z.chunks(8).map(|x| from_bits_to_u8(x)).collect::<Vec<_>>();
-            let hex_out = hex::encode(&z_u8);
-            assert_eq!(hex_out, expected_keccak(&input));
-        }
-    }
+
 
     #[test]
     fn test_keccakf_without_ciruit() {

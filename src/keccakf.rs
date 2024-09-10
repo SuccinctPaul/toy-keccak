@@ -1,9 +1,9 @@
-use crate::params::ROTR;
+use crate::params::{ROTR, ROUNDS, WIDTH_IN_WORDS};
 use crate::utils::*;
 
-pub fn round(a: [u64; 25], rc: u64) -> [u64; 25] {
+pub fn round(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WORDS] {
     let mut a = a;
-    // θ step
+    // θ-Theta step
     let mut c = [0u64; 5];
     for x in 0..5 {
         c[x] = xor(
@@ -21,6 +21,7 @@ pub fn round(a: [u64; 25], rc: u64) -> [u64; 25] {
         }
     }
 
+    // Rho and pi Steps
     // ρ and π steps
     let mut b = [0u64; 25];
     for x in 0..5 {
@@ -29,7 +30,7 @@ pub fn round(a: [u64; 25], rc: u64) -> [u64; 25] {
         }
     }
 
-    // χ step
+    // χ-Chi step
     for x in 0..5 {
         for y in 0..5 {
             a[x + y * 5] = xor(
@@ -39,16 +40,16 @@ pub fn round(a: [u64; 25], rc: u64) -> [u64; 25] {
         }
     }
 
-    // ι step
-    a[0] = xor(a[0], rc);
+    // ι-Iota step
+    a[0] = xor(a[0], crate::params::RC[round]);
     return a;
 }
 
 pub fn keccakf(input: Vec<bool>) -> Vec<bool> {
     let a = input.chunks(64).map(|e| from_bits(e)).collect::<Vec<_>>();
     let mut a = a.try_into().unwrap();
-    for i in 0..24 {
-        a = round(a, crate::params::RC[i]);
+    for i in 0..ROUNDS {
+        a = round(a, i);
     }
     return a.iter().flat_map(|x| u64_to_bits(*x)).collect::<Vec<_>>();
 }

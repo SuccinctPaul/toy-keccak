@@ -1,3 +1,8 @@
+// Calculate the block length of Sponge Construct.
+pub fn bits_to_rate(bits: usize) -> usize {
+    200 - bits / 4
+}
+
 pub fn xor(x: u64, y: u64) -> u64 {
     return x ^ y;
 }

@@ -1,18 +1,18 @@
 // Keccak-f(b) is an iterated permutation.
 
-pub const RHO: [u32; 24] = [
-    1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44,
-];
-
 pub const ROTR: [usize; 25] = [
     0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
 ];
 
-pub const PI: [usize; 24] = [
-    10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14, 22, 9, 6, 1,
-];
+// b=25*2^\ell, generally, b=1600
+// It's in num of bits.
+pub const WIDTH: usize = 1600;
 
-pub const WORDS: usize = 25;
+// WIDTH/8
+pub const WIDTH_IN_BYTES: usize = 200;
+
+// WIDTH/64, Word=64
+pub const WIDTH_IN_WORDS: usize = 25;
 
 // Permutation Rounds: $n_r=12+2\ell$
 pub const ROUNDS: usize = 24;
@@ -44,3 +44,6 @@ pub const RC: [u64; ROUNDS] = [
     0x80000001u64,
     0x8000000080008008u64,
 ];
+
+// Which used is padding pad10*1
+pub const KECCAK_F_DELIM: u8 = 0x01;

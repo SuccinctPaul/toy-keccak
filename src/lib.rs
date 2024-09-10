@@ -1,5 +1,6 @@
-mod keccak256;
-mod keccakf;
+pub mod keccak256;
+pub mod keccakf;
+pub mod padding_rules;
 pub mod params;
-mod test;
-mod utils;
+pub mod test;
+pub mod utils;
