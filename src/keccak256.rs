@@ -28,7 +28,7 @@ impl Keccak {
         }
     }
 
-    pub fn keccak256(&self, input: &[u8]) -> Vec<u8> {
+    pub fn hash(&self, input: &[u8]) -> Vec<u8> {
         let block_size = self.rate; // in bytes
         let num_blocks = input.len() / block_size + 1;
 
@@ -57,5 +57,5 @@ impl Keccak {
 
 pub fn keccak256(input: &[u8]) -> Vec<u8> {
     let keccak = Keccak::v256();
-    keccak.keccak256(input)
+    keccak.hash(input)
 }
