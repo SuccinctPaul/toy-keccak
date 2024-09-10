@@ -18,6 +18,9 @@ pub fn padding(input: &[u8], block_size: usize) -> Vec<u8> {
 
 #[cfg(test)]
 mod test {
+    use crate::padding_rules::padding;
+    use crate::params::KECCAK_F_DELIM;
+
     #[test]
     fn test_padding() {
         let hex_in = "6162636462636465636465666465666765666768666768696768696a68696a6b696a6b6c6a6b6c6d6b6c6d6e6c6d6e6f6d6e6f706e6f7071";
@@ -31,29 +34,7 @@ mod test {
             .map(|i| u8::from_str_radix(&hex[i..i + 2], 16).unwrap())
             .collect::<Vec<u8>>();
 
-        let num_bytes = bytes.len();
-        println!("inputs_bytes: {:?}", bytes);
-        println!("inputs_bytes len: {:?}", bytes.len());
-        println!("hex_in len: {:?}", hex_in.len());
-
-        let mut stack_1 = bytes;
-        stack_1.reverse();
-        println!("stack_1: {:?}", stack_1);
-
-        // push_reverse_to_alt
-        let stack_2 = (1..num_bytes)
-            .map(|i| stack_1[num_bytes - i])
-            .collect::<Vec<_>>();
-        println!("stack_2: {:?}", stack_2);
-
-        let mut stack_3 = stack_1;
-        stack_3.push(0x80);
-        for i in 0..59 {
-            stack_3.push(0);
-        }
-        // push u32
-        println!("0");
-        // push u32
-        println!("59*8: {:X}", 59 * 8);
+        let padding = padding(&bytes, KECCAK_F_DELIM as usize);
+        println!("padding: {:?}", padding);
     }
 }
