@@ -47,7 +47,7 @@ impl Keccak {
             }
             m = keccakf(m);
         }
-        let z = m[0..256]
+        let z = m[0..self.output_bits_len]
             .chunks(8)
             .map(|x| from_bits_to_u8(x))
             .collect::<Vec<_>>();
