@@ -11,5 +11,5 @@ pub mod utils;
 
 pub fn keccak256(input: &[u8]) -> Vec<u8> {
     let keccak = Keccak::v256();
-    keccak.hash(input)
+    keccak.hash_64bits(input)
 }

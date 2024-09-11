@@ -22,7 +22,7 @@ pub const WIDTH_IN_U32: usize = 50;
 pub const ROUNDS: usize = 24;
 
 // Round Constants
-pub const RC: [u64; ROUNDS] = [
+pub const RC_64_BITS: [u64; ROUNDS] = [
     1u64,
     0x8082u64,
     0x800000000000808au64,

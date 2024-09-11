@@ -41,7 +41,7 @@ mod tests {
         for length in [1, 4, 136, 272, 1000, 20000] {
             let input = random_bytes_vec(length, rng);
             let keccak = crate::keccak::Keccak::v256();
-            let z = keccak.hash(&input);
+            let z = keccak.hash_64bits(&input);
             let hex_out = hex::encode(&z);
             assert_eq!(hex_out, expected_keccak256(&input));
         }
@@ -52,7 +52,7 @@ mod tests {
         for length in [1, 4, 136, 272, 1000, 20000] {
             let input = random_bytes_vec(length, rng);
             let keccak = crate::keccak::Keccak::v512();
-            let z = keccak.hash(&input);
+            let z = keccak.hash_64bits(&input);
             let hex_out = hex::encode(&z);
             assert_eq!(hex_out, expected_keccak512(&input));
         }
@@ -64,7 +64,7 @@ mod tests {
         for length in [1, 4, 136, 272, 1000, 20000] {
             let input = random_bytes_vec(length, rng);
             let keccak = crate::keccak::Keccak::v384();
-            let z = keccak.hash(&input);
+            let z = keccak.hash_64bits(&input);
             let hex_out = hex::encode(&z);
             assert_eq!(hex_out, expected_keccak384(&input));
         }

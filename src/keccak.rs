@@ -34,7 +34,10 @@ impl Keccak {
         }
     }
 
-    pub fn hash(&self, input: &[u8]) -> Vec<u8> {
+    // The state is organized as an array of 5×5 lanes, each of length w∈{1,2,4,8,16,32,64} and b=25w
+    // When implemented on a 64-bit processor, a lane of Keccak-f[1600], can be represented as a 64-bit CPU word.
+    // So the state is a 5×5 array, which lanes is 64-bits word.
+    pub fn hash_64bits(&self, input: &[u8]) -> Vec<u8> {
         let block_size_in_u8 = self.rate; // in bytes
         let num_blocks = input.len() / block_size_in_u8 + 1;
 
@@ -52,7 +55,32 @@ impl Keccak {
                 m[j] ^= padded_u64[i * block_size_in_u64 + j];
             }
             // permutation
-            m = keccakf(m);
+            m = keccakf_64bits(m);
+        }
+
+        from_u64_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
+    }
+
+    // The state is a 5×5×2 matrix, which lanes is 2*32-bits word.
+    pub fn hash_32bits(&self, input: &[u8]) -> Vec<u8> {
+        let block_size_in_u8 = self.rate; // in bytes
+        let num_blocks = input.len() / block_size_in_u8 + 1;
+
+        let block_size_in_u32 = self.rate / 4; // in u32
+        let block_size_in_u64 = self.rate / 8; // in u64
+
+        let padded = padding(input, block_size_in_u8);
+        let mut padded_u64 = from_u8_to_u64(&padded);
+
+        let mut m = [0; WIDTH_IN_WORDS];
+
+        for i in 0..num_blocks {
+            // xor the r of state with padding block.
+            for j in 0..block_size_in_u64 {
+                m[j] ^= padded_u64[i * block_size_in_u64 + j];
+            }
+            // permutation
+            m = keccakf_64bits(m);
         }
 
         from_u64_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
