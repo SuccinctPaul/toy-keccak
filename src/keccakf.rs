@@ -4,7 +4,7 @@
 //！ - b: 25 50 100 200 400 800 1600 (25 × 2ˡ)
 //！Keccak256 specifies Keccak-f[1600] only, hence ℓ=6, w=64, b=1600.
 
-use crate::params::{ROTR, ROUNDS, WIDTH_IN_BYTES, WIDTH_IN_U32, WIDTH_IN_WORDS};
+use crate::params::{ROUNDS, WIDTH_IN_U32, WIDTH_IN_WORDS};
 use crate::utils::*;
 use std::intrinsics::transmute_unchecked;
 
@@ -41,7 +41,7 @@ impl KeccakF64 {
         let mut res = [0u64; WIDTH_IN_WORDS];
         for x in 0..5 {
             for y in 0..5 {
-                res[y + ((2 * x + 3 * y) % 5) * 5] = rot(a[x + y * 5], ROTR[x + y * 5]);
+                res[y + ((2 * x + 3 * y) % 5) * 5] = rot(a[x + y * 5], Self::ROTR[x + y * 5]);
             }
         }
         res
@@ -65,7 +65,7 @@ impl KeccakF64 {
     // ι-Iota step
     // A[0,0] = A[0,0] xor RC
     pub fn iota(mut c: Self::STATE, round: usize) -> Self::STATE {
-        c[0] = xor(c[0], crate::params::RC_64_BITS[round]);
+        c[0] = xor(c[0], Self::RC_64_BITS[round]);
         c
     }
 
@@ -130,8 +130,9 @@ impl KeccakF32 {
         let mut res = [0; WIDTH_IN_U32];
         for x in 0..5 {
             for y in 0..5 {
-                res[y + ((2 * x + 3 * y) % 5) * 5] =
-                    a[x + y * 5].rotate_left(ROTR[x + y * 5] as u32);
+                // todo
+                // res[y + ((2 * x + 3 * y) % 5) * 5] =
+                //     a[x + y * 5].rotate_left(ROTR[x + y * 5] as u32);
             }
         }
         res
@@ -156,7 +157,7 @@ impl KeccakF32 {
     // A[0,0] = A[0,0] xor RC
     pub fn iota(mut c: Self::STATE, round: usize) -> Self::STATE {
         // TODO regenerate the RC
-        c[0] = xor(c[0], crate::params::RC_64_BITS[round] as u32);
+        // c[0] = xor(c[0], crate::params::RC_64_BITS[round] as u32);
         c
     }
 
