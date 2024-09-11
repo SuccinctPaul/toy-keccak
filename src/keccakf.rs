@@ -8,7 +8,7 @@ use std::intrinsics::transmute_unchecked;
 pub fn round_1600(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WORDS] {
     let mut a = a;
     // θ-Theta step
-    // see more Algorithm 3 in Keecak-refrence-3.0
+    // C[x] = A[x,0] xor A[x,1] xor A[x,2] xor A[x,3] xor A[x,4],   for x in 0…4
     let mut c = [0u64; 5];
     for x in 0..5 {
         c[x] = xor(
@@ -16,19 +16,20 @@ pub fn round_1600(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WORD
             xor(a[x + 5], xor(a[x + 2 * 5], xor(a[x + 3 * 5], a[x + 4 * 5]))),
         );
     }
+    // D[x] = C[x-1] xor rot(C[x+1],1),                             for x in 0…4
     let mut d = [0u64; 5];
     for x in 0..5 {
         d[x] = xor(c[(x + 4) % 5], rot(c[(x + 1) % 5], 1));
     }
+    // A[x,y] = A[x,y] xor D[x],                           for (x,y) in (0…4,0…4)
     for x in 0..5 {
         for y in 0..5 {
             a[x + y * 5] = xor(a[x + y * 5], d[x]);
         }
     }
 
-    // Rho and pi Steps
     // ρ and π steps
-    // see more Algorithm 4/5 in Keecak-refrence-3.0
+    // B[y,2*x+3*y] = rot(A[x,y], r[x,y]),                 for (x,y) in (0…4,0…4)
     let mut b = [0u64; WIDTH_IN_WORDS];
     for x in 0..5 {
         for y in 0..5 {
@@ -37,7 +38,7 @@ pub fn round_1600(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WORD
     }
 
     // χ-Chi step,
-    // see more Algorithm 2 in Keecak-refrence-3.0
+    // A[x,y] = B[x,y] xor ((not B[x+1,y]) and B[x+2,y]),  for (x,y) in (0…4,0…4)
     for x in 0..5 {
         for y in 0..5 {
             a[x + y * 5] = xor(
@@ -48,6 +49,7 @@ pub fn round_1600(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WORD
     }
 
     // ι-Iota step
+    // A[0,0] = A[0,0] xor RC
     let rc_u64 = crate::params::RC[round];
 
     a[0] = xor(a[0], rc_u64);
