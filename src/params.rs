@@ -4,7 +4,7 @@ pub const ROTR: [usize; 25] = [
     0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
 ];
 
-// b=25*2^\ell, generally, b=1600
+// b=25*2^\ell=r+b, generally, b=1600
 // It's in num of bits.
 pub const WIDTH: usize = 1600;
 
@@ -50,5 +50,7 @@ pub const RC: [u64; ROUNDS] = [
 
 // Which used is padding pad10*1
 pub const KECCAK_F_DELIM: u8 = 0x01;
-// The block size of sponge construct in bytes.
+// The block size of sponge construct in bytes: `r = KEKKAC_RATE * 8`
+// The sponge construction operates on a state of `b=r+c` bits. The value `r` is called the bitrate
+// and the value `c` the capacity.
 pub const KEKKAC_RATE: usize = 136;

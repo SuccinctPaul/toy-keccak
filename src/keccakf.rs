@@ -46,7 +46,9 @@ pub fn permutation(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WOR
     }
 
     // ι-Iota step
-    a[0] = xor(a[0], crate::params::RC[round]);
+    let rc_u64 = crate::params::RC[round];
+
+    a[0] = xor(a[0], rc_u64);
     return a;
 }
 

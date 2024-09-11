@@ -47,9 +47,11 @@ impl Keccak {
         let mut m = [0; WIDTH_IN_WORDS];
 
         for i in 0..num_blocks {
+            // xor the r of state with padding block.
             for j in 0..block_size_in_u64 {
                 m[j] ^= padded_u64[i * block_size_in_u64 + j];
             }
+            // permutation
             m = keccakf(m);
         }
 

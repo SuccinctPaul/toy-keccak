@@ -1,6 +1,7 @@
 use std::ops::{BitAnd, BitXor, Not};
 
-// Calculate the block length of Sponge Construct.
+// Calculate the block length(in bytes) of Sponge Construct.
+// Aka equal: (1600 - 2*bits)/8, which means b=r+c, r=2*bits.
 pub fn bits_to_rate(bits: usize) -> usize {
     200 - bits / 4
 }
