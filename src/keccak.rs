@@ -1,6 +1,6 @@
 use crate::keccakf::*;
 use crate::padding_rules::padding;
-use crate::params::{KECCAK_F_DELIM, WIDTH, WIDTH_IN_BYTES, WIDTH_IN_WORDS};
+use crate::params::{KECCAK_F_DELIM, WIDTH, WIDTH_IN_BYTES, WIDTH_IN_U32, WIDTH_IN_WORDS};
 use crate::utils::*;
 use std::intrinsics::transmute_unchecked;
 use std::mem::transmute;
@@ -55,7 +55,7 @@ impl Keccak {
                 m[j] ^= padded_u64[i * block_size_in_u64 + j];
             }
             // permutation
-            m = keccakf_64bits(m);
+            m = KeccakF64::keccakf(m);
         }
 
         from_u64_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
@@ -67,23 +67,22 @@ impl Keccak {
         let num_blocks = input.len() / block_size_in_u8 + 1;
 
         let block_size_in_u32 = self.rate / 4; // in u32
-        let block_size_in_u64 = self.rate / 8; // in u64
 
         let padded = padding(input, block_size_in_u8);
-        let mut padded_u64 = from_u8_to_u64(&padded);
+        let mut padded_u32 = from_u8_to_u32(padded);
 
-        let mut m = [0; WIDTH_IN_WORDS];
+        let mut m = [0; WIDTH_IN_U32];
 
         for i in 0..num_blocks {
             // xor the r of state with padding block.
-            for j in 0..block_size_in_u64 {
-                m[j] ^= padded_u64[i * block_size_in_u64 + j];
+            for j in 0..block_size_in_u32 {
+                m[j] ^= padded_u32[i * block_size_in_u32 + j];
             }
             // permutation
-            m = keccakf_64bits(m);
+            m = KeccakF32::keccakf(m);
         }
 
-        from_u64_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
+        from_u32_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
     }
 }
 

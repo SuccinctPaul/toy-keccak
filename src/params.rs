@@ -23,30 +23,30 @@ pub const ROUNDS: usize = 24;
 
 // Round Constants
 pub const RC_64_BITS: [u64; ROUNDS] = [
-    1u64,
-    0x8082u64,
-    0x800000000000808au64,
-    0x8000000080008000u64,
-    0x808bu64,
-    0x80000001u64,
-    0x8000000080008081u64,
-    0x8000000000008009u64,
-    0x8au64,
-    0x88u64,
-    0x80008009u64,
-    0x8000000au64,
-    0x8000808bu64,
-    0x800000000000008bu64,
-    0x8000000000008089u64,
-    0x8000000000008003u64,
-    0x8000000000008002u64,
-    0x8000000000000080u64,
-    0x800au64,
-    0x800000008000000au64,
-    0x8000000080008081u64,
-    0x8000000000008080u64,
-    0x80000001u64,
-    0x8000000080008008u64,
+    1,
+    0x8082,
+    0x800000000000808a,
+    0x8000000080008000,
+    0x808b,
+    0x80000001,
+    0x8000000080008081,
+    0x8000000000008009,
+    0x8a,
+    0x88,
+    0x80008009,
+    0x8000000a,
+    0x8000808b,
+    0x800000000000008b,
+    0x8000000000008089,
+    0x8000000000008003,
+    0x8000000000008002,
+    0x8000000000000080,
+    0x800a,
+    0x800000008000000a,
+    0x8000000080008081,
+    0x8000000000008080,
+    0x80000001,
+    0x8000000080008008,
 ];
 
 // Which used is padding pad10*1
@@ -55,3 +55,17 @@ pub const KECCAK_F_DELIM: u8 = 0x01;
 // The sponge construction operates on a state of `b=r+c` bits. The value `r` is called the bitrate
 // and the value `c` the capacity.
 pub const KEKKAC_RATE: usize = 136;
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::utils::from_u64_to_u32;
+
+    #[test]
+    fn test_gen_RC_32_bits() {
+        let rc_32_bits = from_u64_to_u32(RC_64_BITS.to_vec());
+        for x in rc_32_bits {
+            println!("{:6X}", x);
+        }
+    }
+}

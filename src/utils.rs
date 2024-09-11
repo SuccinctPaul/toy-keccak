@@ -99,3 +99,7 @@ pub fn from_u8_to_u64(bytes: &[u8]) -> Vec<u64> {
         .map(|chunk| u64::from_le_bytes(chunk.try_into().unwrap()))
         .collect()
 }
+
+pub fn from_u64_to_u32(words: Vec<u64>) -> Vec<u32> {
+    from_u8_to_u32(from_u64_to_u8(words))
+}

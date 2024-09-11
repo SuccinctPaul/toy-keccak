@@ -1,4 +1,5 @@
 #![feature(core_intrinsics)]
+#![feature(inherent_associated_types)]
 
 use crate::keccak::Keccak;
 
