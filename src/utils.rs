@@ -1,9 +1,11 @@
+use std::ops::{BitAnd, BitXor, Not};
+
 // Calculate the block length of Sponge Construct.
 pub fn bits_to_rate(bits: usize) -> usize {
     200 - bits / 4
 }
 
-pub fn xor(x: u64, y: u64) -> u64 {
+pub fn xor<T: BitXor<Output = T>>(x: T, y: T) -> T {
     return x ^ y;
 }
 
@@ -11,11 +13,11 @@ pub fn rot(x: u64, i: usize) -> u64 {
     return x.rotate_left(i as u32);
 }
 
-pub fn and(x: u64, y: u64) -> u64 {
-    return x & y;
+pub fn and<T: BitAnd<Output = T>>(x: T, y: T) -> T {
+    x & y
 }
 
-pub fn not(x: u64) -> u64 {
+pub fn not<T: Not<Output = T>>(x: T) -> T {
     return !x;
 }
 

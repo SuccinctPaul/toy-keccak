@@ -14,6 +14,9 @@ pub const WIDTH_IN_BYTES: usize = 200;
 // WIDTH/64, Word=64
 pub const WIDTH_IN_WORDS: usize = 25;
 
+// WIDTH/64, Word=64
+pub const WIDTH_IN_U32: usize = 50;
+
 // Permutation Rounds: $n_r=12+2\ell$
 pub const ROUNDS: usize = 24;
 
