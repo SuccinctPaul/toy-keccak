@@ -1,4 +1,5 @@
 // Keccak-f(b) is an iterated permutation.
+// From https://keccak.team/keccak_specs_summary.html
 
 pub const ROTR: [usize; 25] = [
     0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
