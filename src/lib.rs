@@ -1,3 +1,5 @@
+#![feature(core_intrinsics)]
+
 use crate::keccak::Keccak;
 
 pub mod keccak;

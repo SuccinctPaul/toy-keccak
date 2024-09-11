@@ -1,7 +1,9 @@
 use crate::keccakf::*;
 use crate::padding_rules::padding;
-use crate::params::{KECCAK_F_DELIM, WIDTH, WIDTH_IN_BYTES};
+use crate::params::{KECCAK_F_DELIM, WIDTH, WIDTH_IN_BYTES, WIDTH_IN_WORDS};
 use crate::utils::*;
+use std::intrinsics::transmute_unchecked;
+use std::mem::transmute;
 
 #[derive(Clone)]
 pub struct Keccak {
@@ -37,25 +39,18 @@ impl Keccak {
         let num_blocks = input.len() / block_size + 1;
 
         let mut padded = padding(input, block_size);
+        let mut padded_u64 = from_u8_to_u64(&padded);
 
-        let padded_bits = padded
-            .iter()
-            .flat_map(|x| from_u8_to_bits(*x))
-            .collect::<Vec<_>>();
-
-        let mut m = vec![false; WIDTH];
+        let mut m = [0; WIDTH_IN_WORDS];
 
         for i in 0..num_blocks {
-            for j in 0..block_size * 8 {
-                m[j] ^= padded_bits[i * block_size * 8 + j];
+            for j in 0..block_size / 8 {
+                m[j] ^= padded_u64[i * block_size / 8 + j];
             }
             m = keccakf(m);
         }
-        let z = m[0..self.output_bits_len]
-            .chunks(8)
-            .map(|x| from_bits_to_u8(x))
-            .collect::<Vec<_>>();
-        z
+
+        from_u64_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
     }
 }
 

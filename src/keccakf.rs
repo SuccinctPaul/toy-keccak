@@ -1,5 +1,6 @@
 use crate::params::{ROTR, ROUNDS, WIDTH_IN_WORDS};
 use crate::utils::*;
+use std::intrinsics::transmute_unchecked;
 
 // b=1600, aka round_1600
 pub fn permutation(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WORDS] {
@@ -49,19 +50,13 @@ pub fn permutation(a: [u64; WIDTH_IN_WORDS], round: usize) -> [u64; WIDTH_IN_WOR
     return a;
 }
 
-pub fn keccakf(input: Vec<bool>) -> Vec<bool> {
-    let a = input
-        .chunks(64)
-        .map(|e| from_bits_to_u64(e))
-        .collect::<Vec<_>>();
-    let mut a = a.try_into().unwrap();
+pub fn keccakf(input: [u64; WIDTH_IN_WORDS]) -> [u64; WIDTH_IN_WORDS] {
+    let mut a = input;
+
     for i in 0..ROUNDS {
         a = permutation(a, i);
     }
-    return a
-        .iter()
-        .flat_map(|x| from_u64_to_bits(*x))
-        .collect::<Vec<_>>();
+    a
 }
 
 #[cfg(test)]

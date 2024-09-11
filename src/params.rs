@@ -47,3 +47,5 @@ pub const RC: [u64; ROUNDS] = [
 
 // Which used is padding pad10*1
 pub const KECCAK_F_DELIM: u8 = 0x01;
+// The block size of sponge construct in bytes.
+pub const KEKKAC_RATE: usize = 136;

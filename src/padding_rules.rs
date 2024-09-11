@@ -19,7 +19,7 @@ pub fn padding(input: &[u8], block_size: usize) -> Vec<u8> {
 #[cfg(test)]
 mod test {
     use crate::padding_rules::padding;
-    use crate::params::KECCAK_F_DELIM;
+    use crate::params::{KECCAK_F_DELIM, KEKKAC_RATE};
 
     #[test]
     fn test_padding() {
@@ -34,7 +34,8 @@ mod test {
             .map(|i| u8::from_str_radix(&hex[i..i + 2], 16).unwrap())
             .collect::<Vec<u8>>();
 
-        let padding = padding(&bytes, KECCAK_F_DELIM as usize);
+        let padding = padding(&bytes, KEKKAC_RATE);
         println!("padding: {:?}", padding);
+        println!("padding_len: {:?}", padding.len());
     }
 }

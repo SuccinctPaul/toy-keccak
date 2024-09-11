@@ -69,3 +69,30 @@ pub fn from_u8_to_bits(num: u8) -> Vec<bool> {
     }
     result
 }
+
+pub fn from_u8_to_u32(bytes: Vec<u8>) -> Vec<u32> {
+    bytes
+        .chunks_exact(4)
+        .map(|chunk| u32::from_le_bytes(chunk.try_into().unwrap()))
+        .collect()
+}
+pub fn from_u32_to_u8(words: Vec<u32>) -> Vec<u8> {
+    words
+        .into_iter()
+        .flat_map(|word| word.to_le_bytes().into_iter())
+        .collect()
+}
+
+pub fn from_u64_to_u8(words: Vec<u64>) -> Vec<u8> {
+    words
+        .into_iter()
+        .flat_map(|word| word.to_le_bytes().into_iter())
+        .collect()
+}
+
+pub fn from_u8_to_u64(bytes: &[u8]) -> Vec<u64> {
+    bytes
+        .chunks_exact(8)
+        .map(|chunk| u64::from_le_bytes(chunk.try_into().unwrap()))
+        .collect()
+}
