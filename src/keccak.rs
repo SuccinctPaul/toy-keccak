@@ -35,17 +35,20 @@ impl Keccak {
     }
 
     pub fn hash(&self, input: &[u8]) -> Vec<u8> {
-        let block_size = self.rate; // in bytes
-        let num_blocks = input.len() / block_size + 1;
+        let block_size_in_u8 = self.rate; // in bytes
+        let num_blocks = input.len() / block_size_in_u8 + 1;
 
-        let mut padded = padding(input, block_size);
+        let block_size_in_u32 = self.rate / 4; // in u32
+        let block_size_in_u64 = self.rate / 8; // in u64
+
+        let padded = padding(input, block_size_in_u8);
         let mut padded_u64 = from_u8_to_u64(&padded);
 
         let mut m = [0; WIDTH_IN_WORDS];
 
         for i in 0..num_blocks {
-            for j in 0..block_size / 8 {
-                m[j] ^= padded_u64[i * block_size / 8 + j];
+            for j in 0..block_size_in_u64 {
+                m[j] ^= padded_u64[i * block_size_in_u64 + j];
             }
             m = keccakf(m);
         }
