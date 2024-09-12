@@ -58,7 +58,7 @@ impl Keccak {
             m = KeccakF64::keccakf(m);
         }
 
-        from_u64_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
+        from_u64_to_u8(&m.to_vec())[0..self.output_bits_len / 8].to_vec()
     }
 
     // The state is a 5×5×2 matrix, which lanes is 2*32-bits word.
@@ -69,7 +69,7 @@ impl Keccak {
         let block_size_in_u32 = self.rate / 4; // in u32
 
         let padded = padding(input, block_size_in_u8);
-        let mut padded_u32 = from_u8_to_u32(padded);
+        let mut padded_u32 = from_u8_to_u32(&padded);
 
         let mut m = [0; WIDTH_IN_U32];
 
@@ -82,7 +82,7 @@ impl Keccak {
             m = KeccakF32::keccakf(m);
         }
 
-        from_u32_to_u8(m.to_vec())[0..self.output_bits_len / 8].to_vec()
+        from_u32_to_u8(&m.to_vec())[0..self.output_bits_len / 8].to_vec()
     }
 }
 
@@ -91,7 +91,7 @@ pub fn u8_xor(a: u8, b: u8) {}
 #[cfg(test)]
 mod test {
     use crate::params::WIDTH;
-    use crate::utils::{from_bits_to_u8, from_u8_to_bits};
+    use crate::utils::{from_bits_to_u8, from_u32_to_u64, from_u64_to_u32, from_u8_to_bits};
 
     #[test]
     fn test_u8_xor() {
@@ -156,5 +156,64 @@ mod test {
         }
 
         assert_eq!(expect, actual_res);
+    }
+
+    #[test]
+    fn test_u64_to_u32() {
+        let u64_src_vec: Vec<u64> = vec![1123453452345, 2512341324123412341];
+        let u32_src_vec = from_u64_to_u32(&u64_src_vec);
+        println!("u64_src_vec: {:?}", u64_src_vec);
+        println!("u32_src_vec: {:?} \n", u32_src_vec);
+
+        let u64_dst_vec: Vec<u64> = vec![22422, 565375765756];
+        let u32_dst_vec = from_u64_to_u32(&u64_dst_vec);
+        println!("u64_dst_vec: {:?}", u64_dst_vec);
+        println!("u32_dst_vec: {:?} \n", u32_dst_vec);
+
+        let mut u64_res_xor = vec![];
+        let mut u64_res_and = vec![];
+        let mut u64_res_rot = vec![];
+        let mut u64_res_not = vec![];
+
+        for (a, b) in u64_src_vec.into_iter().zip(u64_dst_vec) {
+            u64_res_xor.push(a ^ b);
+            u64_res_and.push(a & b);
+            u64_res_rot.push(a.rotate_left(2));
+            u64_res_not.push(!a);
+        }
+        println!("u64_res_xor: {:?}", u64_res_xor);
+        println!("u64_res_and: {:?}", u64_res_and);
+        println!("u64_res_rot: {:?}", u64_res_rot);
+        println!("u64_res_not: {:?}\n", u64_res_not);
+
+        let mut u32res_xor = vec![];
+        let mut u32res_and = vec![];
+        let mut u32res_rot = vec![];
+        let mut u32res_not = vec![];
+        for (a, b) in u32_src_vec.into_iter().zip(u32_dst_vec) {
+            u32res_xor.push(a ^ b);
+            u32res_and.push(a & b);
+            u32res_rot.push(a.rotate_left(2));
+            u32res_not.push(!a);
+        }
+        println!("u32res_xor: {:?}", u32res_xor);
+        println!("u32res_and: {:?}", u32res_and);
+        println!("u32res_rot: {:?}", u32res_rot);
+        println!("u32res_not: {:?}\n", u32res_not);
+
+        let u32_to_u64_xor = from_u32_to_u64(&u32res_xor);
+        let u32_to_u64_and = from_u32_to_u64(&u32res_and);
+        let u32_to_u64_rot = from_u32_to_u64(&u32res_rot);
+        let u32_to_u64_not = from_u32_to_u64(&u32res_not);
+        println!("u32_to_u64_xor: {:?}", u32_to_u64_xor);
+        println!("u32_to_u64_and: {:?}", u32_to_u64_and);
+        println!("u32_to_u64_rot: {:?}", u32_to_u64_rot);
+        println!("u32_to_u64_not: {:?}\n", u32_to_u64_not);
+
+        assert_eq!(u32_to_u64_xor, u64_res_xor);
+        assert_eq!(u32_to_u64_and, u64_res_and);
+        // TODO: meet error.
+        // assert_eq!(u32_to_u64_rot, u64_res_rot);
+        assert_eq!(u32_to_u64_not, u64_res_not);
     }
 }

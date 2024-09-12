@@ -1,7 +1,7 @@
 // Keccak-f(b) is an iterated permutation.
 // From https://keccak.team/keccak_specs_summary.html
 
-use crate::keccakf::KeccakF64;
+use crate::keccakf::{KeccakF32, KeccakF64};
 // b=25*2^\ell=r+b, generally, b=1600
 // It's in num of bits.
 pub const WIDTH: usize = 1600;
@@ -60,6 +60,24 @@ impl KeccakF64 {
     ];
 }
 
+impl KeccakF32 {
+    pub const ROTR: [usize; 25] = [
+        0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56,
+        14,
+    ];
+
+    // Round Constants in 64 bits
+    pub const RC_32_BITS: [u32; ROUNDS * 2] = [
+        0x00000001, 0x00000000, 0x00000000, 0x00000089, 0x00000000, 0x8000008B, 0x00000000,
+        0x80008080, 0x00000001, 0x0000008B, 0x00000001, 0x00008000, 0x00000001, 0x80008088,
+        0x00000001, 0x80000082, 0x00000000, 0x0000000B, 0x00000000, 0x0000000A, 0x00000001,
+        0x00008082, 0x00000000, 0x00008003, 0x00000001, 0x0000808B, 0x00000001, 0x8000000B,
+        0x00000001, 0x8000008A, 0x00000001, 0x80000081, 0x00000000, 0x80000081, 0x00000000,
+        0x80000008, 0x00000000, 0x00000083, 0x00000000, 0x80008003, 0x00000001, 0x80008088,
+        0x00000000, 0x80000088, 0x00000001, 0x00008000, 0x00000000, 0x80008082,
+    ];
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -67,9 +85,14 @@ mod test {
 
     #[test]
     fn test_gen_RC_32_bits() {
-        let rc_32_bits = from_u64_to_u32(KeccakF64::RC_64_BITS.to_vec());
+        let rc_32_bits = from_u64_to_u32(&KeccakF64::RC_64_BITS.to_vec());
         for x in rc_32_bits {
             println!("{:6X}", x);
         }
     }
+
+    // #[test]
+    // fn test_gen_round_constant() {
+    //     let rc = |t| { x ^ t }
+    // }
 }

@@ -12,7 +12,7 @@ pub struct KeccakF64;
 
 impl KeccakF64 {
     pub type STATE = [u64; WIDTH_IN_WORDS];
-    // Theta step
+    // Theta step - XOR and 1-bit rotations
     pub fn theta(a: Self::STATE) -> Self::STATE {
         // C[x] = A[x,0] xor A[x,1] xor A[x,2] xor A[x,3] xor A[x,4],   for x in 0…4
         let mut c = [0u64; 5];
@@ -36,6 +36,9 @@ impl KeccakF64 {
     }
 
     // ρ and π steps
+    // ρ - rotations
+    // π - just reading the correct words
+    //
     // B[y,2*x+3*y] = rot(A[x,y], r[x,y]),                 for (x,y) in (0…4,0…4)
     pub fn rho_phi(a: Self::STATE) -> Self::STATE {
         let mut res = [0u64; WIDTH_IN_WORDS];
@@ -47,7 +50,8 @@ impl KeccakF64 {
         res
     }
 
-    // χ-Chi step,
+    // χ-Chi - XOR, AND, NOT
+    //
     // A[x,y] = B[x,y] xor ((not B[x+1,y]) and B[x+2,y]),  for (x,y) in (0…4,0…4)
     pub fn chi(b: Self::STATE) -> Self::STATE {
         let mut res = [0u64; WIDTH_IN_WORDS];
@@ -62,7 +66,7 @@ impl KeccakF64 {
         res
     }
 
-    // ι-Iota step
+    // ι-Iota - just a XOR
     // A[0,0] = A[0,0] xor RC
     pub fn iota(mut c: Self::STATE, round: usize) -> Self::STATE {
         c[0] = xor(c[0], Self::RC_64_BITS[round]);
@@ -104,21 +108,22 @@ impl KeccakF32 {
     // Theta step
     pub fn theta(a: Self::STATE) -> Self::STATE {
         // C[x] = A[x,0] xor A[x,1] xor A[x,2] xor A[x,3] xor A[x,4],   for x in 0…4
-        let mut c = [0; 5];
-        for x in 0..5 {
-            c[x] = a[x] ^ a[x + 5] ^ a[x + 2 * 5] ^ a[x + 3 * 5] ^ a[x + 4 * 5];
+        let mut c = [0; 10];
+        for x in 0..10 {
+            c[x] = a[x] ^ a[x + 10] ^ a[x + 2 * 10] ^ a[x + 3 * 10] ^ a[x + 4 * 10];
         }
+
         // D[x] = C[x-1] xor rot(C[x+1],1),                             for x in 0…4
-        let mut d = [0; 5];
+        let mut d = [0; 10];
         for x in 0..5 {
-            d[x] = xor(c[(x + 4) % 5], c[(x + 1) % 5].rotate_left(1));
+            d[x] = xor(c[(x + 9) % 10], c[(x + 1) % 10].rotate_left(1));
         }
 
         // A[x,y] = A[x,y] xor D[x],                           for (x,y) in (0…4,0…4)
         let mut res = [0; WIDTH_IN_U32];
-        for x in 0..5 {
+        for x in 0..10 {
             for y in 0..5 {
-                res[x + y * 5] = xor(a[x + y * 5], d[x]);
+                res[x + y * 10] = xor(a[x + y * 10], d[x]);
             }
         }
         res
@@ -191,6 +196,7 @@ impl KeccakF32 {
 #[cfg(test)]
 mod test {
     use crate::keccakf::KeccakF64;
+    use crate::utils::from_u64_to_u32;
 
     #[test]
     fn test_permutation_test() {

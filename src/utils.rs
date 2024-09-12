@@ -1,3 +1,4 @@
+use std::char::from_u32;
 use std::ops::{BitAnd, BitXor, Not};
 
 // Calculate the block length(in bytes) of Sponge Construct.
@@ -73,20 +74,20 @@ pub fn from_u8_to_bits(num: u8) -> Vec<bool> {
     result
 }
 
-pub fn from_u8_to_u32(bytes: Vec<u8>) -> Vec<u32> {
+pub fn from_u8_to_u32(bytes: &Vec<u8>) -> Vec<u32> {
     bytes
         .chunks_exact(4)
         .map(|chunk| u32::from_le_bytes(chunk.try_into().unwrap()))
         .collect()
 }
-pub fn from_u32_to_u8(words: Vec<u32>) -> Vec<u8> {
+pub fn from_u32_to_u8(words: &Vec<u32>) -> Vec<u8> {
     words
         .into_iter()
         .flat_map(|word| word.to_le_bytes().into_iter())
         .collect()
 }
 
-pub fn from_u64_to_u8(words: Vec<u64>) -> Vec<u8> {
+pub fn from_u64_to_u8(words: &Vec<u64>) -> Vec<u8> {
     words
         .into_iter()
         .flat_map(|word| word.to_le_bytes().into_iter())
@@ -100,6 +101,10 @@ pub fn from_u8_to_u64(bytes: &[u8]) -> Vec<u64> {
         .collect()
 }
 
-pub fn from_u64_to_u32(words: Vec<u64>) -> Vec<u32> {
-    from_u8_to_u32(from_u64_to_u8(words))
+pub fn from_u64_to_u32(words: &Vec<u64>) -> Vec<u32> {
+    from_u8_to_u32(&from_u64_to_u8(&words))
+}
+
+pub fn from_u32_to_u64(words: &Vec<u32>) -> Vec<u64> {
+    from_u8_to_u64(&from_u32_to_u8(&words))
 }
