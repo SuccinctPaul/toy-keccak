@@ -3,9 +3,6 @@
 
 
 
-
-
-
 ## References
 * https://keccak.team/keccak.html
 * https://keccak.team/files/CSF-0.1.pdf

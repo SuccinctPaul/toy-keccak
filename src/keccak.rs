@@ -60,30 +60,6 @@ impl Keccak {
 
         from_u64_to_u8(&m.to_vec())[0..self.output_bits_len / 8].to_vec()
     }
-
-    // The state is a 5×5×2 matrix, which lanes is 2*32-bits word.
-    pub fn hash_32bits(&self, input: &[u8]) -> Vec<u8> {
-        let block_size_in_u8 = self.rate; // in bytes
-        let num_blocks = input.len() / block_size_in_u8 + 1;
-
-        let block_size_in_u32 = self.rate / 4; // in u32
-
-        let padded = padding(input, block_size_in_u8);
-        let mut padded_u32 = from_u8_to_u32(&padded);
-
-        let mut m = [0; WIDTH_IN_U32];
-
-        for i in 0..num_blocks {
-            // xor the r of state with padding block.
-            for j in 0..block_size_in_u32 {
-                m[j] ^= padded_u32[i * block_size_in_u32 + j];
-            }
-            // permutation
-            m = KeccakF32::keccakf(m);
-        }
-
-        from_u32_to_u8(&m.to_vec())[0..self.output_bits_len / 8].to_vec()
-    }
 }
 
 pub fn u8_xor(a: u8, b: u8) {}
